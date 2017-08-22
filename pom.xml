@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.hpe</groupId>
+    <artifactId>simplelftselenium</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>LeanFT Selenium JUnit Test</name>
+    <description>LeanFT Selenium JUnit Test</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
+        <!--
+        This is for making use of the selenium extentions provided by lft.
+        Example would be the extention of using the new object attributes such as "visibleText"
+        The LeanFT agent is not needed to use these.
+        -->
+        <dependency>
+            <groupId>com.hpe.lft</groupId>
+            <artifactId>selenium-sdk</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <!--
+        This is if you wish to make use of the LeanFT libraries
+        -->
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>sdk</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>sdk</artifactId>
+            <version>RELEASE</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>report</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>reportbuilder</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>unittesting</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hp.lft</groupId>
+            <artifactId>verifications</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <!--<repository>
+                <id>Your repository's ID</id>
+                    <name>Your repository's name</name>
+                    <url>URL of the repository containing the LeanFT jar files</url>
+            </repository>-->
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
