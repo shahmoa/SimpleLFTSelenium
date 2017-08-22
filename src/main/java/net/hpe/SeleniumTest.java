@@ -17,6 +17,7 @@ import org.openqa.selenium.support.pagefactory.ByChained;
 import com.hpe.leanft.selenium.By;
 import com.hpe.leanft.selenium.ByEach;
 
+import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +74,9 @@ public class SeleniumTest  {
         // Location of where your chromedriver is locate.
         // If you don't use the setPropery, then you will need to have chromedriver in your system path
         System.setProperty("webdriver.chrome.driver", "/opt/selenium/2.29/chromedriver");
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions co = new ChromeOptions();
+        co.addExtensions(new File("/opt/leanft/Installations/Chrome/Agent.crx")); // path to agent on my linux yours may differ
+        WebDriver driver = new ChromeDriver(co);
 
         WebDriverWait w = new WebDriverWait(driver,20);
         w.ignoring(NoSuchElementException.class);
@@ -115,35 +118,4 @@ public class SeleniumTest  {
         }
 
     }
-/*
-    @Test
-    public void simple (){
-        System.setProperty("webdriver.chrome.driver", "/opt/selenium/2.29/chromedriver");
-        WebDriver driver = new ChromeDriver();
-
-        try {
-            driver.get("http://www.google.com");
-            ModifiableSDKConfiguration config = new ModifiableSDKConfiguration();
-            config.setServerAddress(new URI("ws://dockerserver:5096"));
-            SDK.init(config);
-
-            Thread.sleep(3000);
-            // The following will attach LeanFT to the browser opened by Selenium and work using LeanFT libraries
-            System.out.println("Current title: "+driver.getTitle().toString());
-            System.out.println();
-            //Browser browser = BrowserFactory.attach(new BrowserDescription.Builder().title(driver.getTitle().toString()).build());
-            Browser browser = BrowserFactory.attach(new BrowserDescription.Builder().type(BrowserType.CHROME).build());
-            browser.highlight();
-        }
-        catch (Exception e){
-            System.out.println("Flynn Error: \n"+e.toString());
-        }
-        finally {
-            driver.quit();
-            SDK.cleanup();
-        }
-
-    }
-    */
-
 }
