@@ -1,10 +1,9 @@
-package net.hpe;
+package net.mf;
 
 import static org.junit.Assert.*;
 
 import com.google.common.base.Verify;
-import com.hp.lft.report.Reporter;
-import com.hp.lft.report.Status;
+import com.hp.lft.report.*;
 import com.sun.jndi.toolkit.url.Uri;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -54,6 +53,17 @@ public class SeleniumTest  {
             SDK.init(config);
 
             Reporter.init();
+
+            /* Below is only needed if you wish to alter the default
+            ModifiableReportConfiguration reportConfig = ReportConfigurationFactory.createDefaultReportConfiguration();
+            reportConfig.setOverrideExisting(true);
+            reportConfig.setTargetDirectory("./SimpleLFTSelenium");
+            reportConfig.setReportFolder("LeanFtJUnitExample");
+            reportConfig.setTitle("Corndog  Title");
+            reportConfig.setDescription("Report Description-Corndog");
+            reportConfig.setSnapshotsLevel(CaptureLevel.ERROR);
+            Reporter.init(reportConfig);
+            */
         }
         catch(Exception e){
             System.out.println("ERROR OCCURRED: \n"+e.toString());
@@ -73,7 +83,7 @@ public class SeleniumTest  {
 
         // Location of where your chromedriver is locate.
         // If you don't use the setPropery, then you will need to have chromedriver in your system path
-        System.setProperty("webdriver.chrome.driver", "/opt/selenium/2.27/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "/home/demo/IdeaProjects/SimpleLFTSelenium/2.36/chromedriver");
         ChromeOptions co = new ChromeOptions();
         co.addExtensions(new File("/opt/leanft/Installations/Chrome/Agent.crx")); // path to agent on my linux yours may differ
         WebDriver driver = new ChromeDriver(co);
@@ -84,10 +94,12 @@ public class SeleniumTest  {
 
         try {
             //driver.get("http://www.advantageonlineshopping.com");
-            driver.get("http://dockerserver:8000/#/");
+            driver.get("http://www.advantageonlineshopping.com");
             //driver.get("http://dockerserver:8000/#/");
 
-            // This line is using the HPE extension of Selenium through the new attribute 'visibleText'
+
+            // This line is using the Micro Focus  extension of Selenium through the new attribute 'visibleText'
+            // I often find the WebDriverWait to be not very reliable and often I need to put in Thread.sleep ()
             w.until(ExpectedConditions.visibilityOfElementLocated(By.visibleText("TABLETS")));  //this is one way to sync on objects in Selenium
             //P=w.until(ExpectedConditions.elementToBeClickable(By.visibleText("TABLETS")));  //this is one way to sync on objects in Selenium
             driver.findElement(By.visibleText("TABLETS")).click();
@@ -101,15 +113,19 @@ public class SeleniumTest  {
             //String price = driver.findElement(By.xpath(priceAccordian)).getText();
             //com.hp.lft.verifications.Verify.areEqual("$1,009.00", price);
 
-            // The following will attach LeanFT to the browser opened by Selenium and work using LeanFT libraries
-            Reporter.reportEvent("Attach to Browser","Current URL: "+driver.getCurrentUrl().toString(),Status.Passed);
-            Browser browser = BrowserFactory.attach(new BrowserDescription.Builder().url(driver.getCurrentUrl().toString()).build());
 
-            browser.describe(Image.class, new ImageDescription.Builder()
+            // The following will attach LeanFT to the browser opened by Selenium and work using LeanFT libraries
+            Reporter.reportEvent("Attach to Browser","Current URL: "+driver.getCurrentUrl(),Status.Passed);
+            Browser browser = BrowserFactory.attach(new BrowserDescription.Builder().url(driver.getCurrentUrl()).build());
+
+            ImageDescription imageDescription = new ImageDescription.Builder()
                     .className("imgProduct")
                     .src(new RegExpProperty(".*image_id=3100"))
                     .tagName("IMG")
-                    .type(com.hp.lft.sdk.web.ImageType.NORMAL).build()).highlight();
+                    .type(com.hp.lft.sdk.web.ImageType.NORMAL).build();
+
+            browser.describe(Image.class, imageDescription).highlight();
+            browser.describe(Image.class, imageDescription).click();
 
         }
         catch (Exception e){
