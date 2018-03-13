@@ -1,34 +1,28 @@
 package net.mf;
 
-import static org.junit.Assert.*;
-
-import com.google.common.base.Verify;
-import com.hp.lft.report.*;
-import com.sun.jndi.toolkit.url.Uri;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.*;
-import org.openqa.selenium.support.pagefactory.ByChained;
-import com.hpe.leanft.selenium.By;
-import com.hpe.leanft.selenium.ByEach;
-
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+
+import org.junit.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.support.ui.*;
 
 import com.hp.lft.sdk.*;
 import com.hp.lft.sdk.web.*;
+import com.hp.lft.report.*;
 import com.hp.lft.verifications.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.hpe.leanft.selenium.Utils;
+import com.hpe.leanft.selenium.ByEach;
+import com.hpe.leanft.selenium.By;
 
 public class SeleniumTest  {
+    //private static String TEST_URL = "http://www.advantageonlineshopping.com";
+    private static String TEST_URL = "http://nimbusserver:8000/";
 
     public SeleniumTest() {
     //Change this constructor to private if you supply your own public constructor
@@ -46,6 +40,7 @@ public class SeleniumTest  {
     public void setUp() throws Exception {
         // initialize the SDK and report only once per process
         // this needs to be done since you are using a different framework than LFT.
+        // More info at https://admhelp.microfocus.com/leanft/en/14.03/HelpCenter/Content/HowTo/CustomFrameworks.htm
         try{
 
             ModifiableSDKConfiguration config = new ModifiableSDKConfiguration();
@@ -53,20 +48,12 @@ public class SeleniumTest  {
             SDK.init(config);
 
             Reporter.init();
-
-            /* Below is only needed if you wish to alter the default
-            ModifiableReportConfiguration reportConfig = ReportConfigurationFactory.createDefaultReportConfiguration();
-            reportConfig.setOverrideExisting(true);
-            reportConfig.setTargetDirectory("./SimpleLFTSelenium");
-            reportConfig.setReportFolder("LeanFtJUnitExample");
-            reportConfig.setTitle("Corndog  Title");
-            reportConfig.setDescription("Report Description-Corndog");
-            reportConfig.setSnapshotsLevel(CaptureLevel.ERROR);
-            Reporter.init(reportConfig);
-            */
+            Reporter.setReportLevel(ReportLevel.All);
+            Reporter.setSnapshotCaptureLevel(CaptureLevel.All);
         }
         catch(Exception e){
-            System.out.println("ERROR OCCURRED: \n"+e.toString());
+            System.out.println("ERROR OCCURRED: ");
+            e.printStackTrace();
         }
     }
 
@@ -79,7 +66,7 @@ public class SeleniumTest  {
 
     @Test
     public void test() throws Exception {
-        //Reporter.init();
+        WebElement we;
 
         // Location of where your chromedriver is locate.
         // If you don't use the setPropery, then you will need to have chromedriver in your system path
@@ -93,29 +80,39 @@ public class SeleniumTest  {
         org.openqa.selenium.WebElement P = null;
 
         try {
-            //driver.get("http://www.advantageonlineshopping.com");
-            driver.get("http://www.advantageonlineshopping.com");
-            //driver.get("http://dockerserver:8000/#/");
+            Reporter.reportEvent("Launch Selenium webdriver", "<b>Using URL:</b><br><h1><font color='red'><a href='"+TEST_URL+"' target='_blank'>"+TEST_URL+"</font></h1>");
 
+            driver.get(TEST_URL);
 
             // This line is using the Micro Focus  extension of Selenium through the new attribute 'visibleText'
             // I often find the WebDriverWait to be not very reliable and often I need to put in Thread.sleep ()
             w.until(ExpectedConditions.visibilityOfElementLocated(By.visibleText("TABLETS")));  //this is one way to sync on objects in Selenium
-            //P=w.until(ExpectedConditions.elementToBeClickable(By.visibleText("TABLETS")));  //this is one way to sync on objects in Selenium
+
             driver.findElement(By.visibleText("TABLETS")).click();
 
+
             // This line is using normal Selenium attributes
+            Thread.sleep(2000);
             w.until(ExpectedConditions.visibilityOfElementLocated(By.id("accordionPrice")));  //this is one way to sync on objects in Selenium
-            driver.findElement(By.id("accordionPrice")).click();
+            we = driver.findElement(By.id("accordionPrice"));
+            we.click();
 
-            //String priceAccordian = "/html/body/div[3]/section/article/div[3]/div/div/div[2]/ul/li[1]/p[2]/a";
-            //w.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(priceAccordian)));
-            //String price = driver.findElement(By.xpath(priceAccordian)).getText();
-            //com.hp.lft.verifications.Verify.areEqual("$1,009.00", price);
+            Utils.highlight(we);
+            RenderedImage snapshot = Utils.getSnapshot(we);
+            Reporter.reportEvent("Accordion Price", "", Status.Passed,snapshot);
+
+            we = driver.findElement(new ByEach(
+                        By.tagName("a"),
+                        By.visibleText(Pattern.compile("\\$1,00\\d\\.\\d\\d"))
+                        ));
+
+            Verify.areEqual ("$1,009.99", we.getText());
+            Verify.areEqual ("$1,009.00", we.getText(), "Price Verification","Verify price displayed matches price expected", Utils.getSnapshot(we));
 
 
+            // ---------- Switch to having UFT Pro (LeanFT) work on the browser ----------
             // The following will attach LeanFT to the browser opened by Selenium and work using LeanFT libraries
-            Reporter.reportEvent("Attach to Browser","Current URL: "+driver.getCurrentUrl(),Status.Passed);
+            Reporter.reportEvent("Attach to Browser","Current URL: "+driver.getCurrentUrl());
             Browser browser = BrowserFactory.attach(new BrowserDescription.Builder().url(driver.getCurrentUrl()).build());
 
             ImageDescription imageDescription = new ImageDescription.Builder()
@@ -126,6 +123,7 @@ public class SeleniumTest  {
 
             browser.describe(Image.class, imageDescription).highlight();
             browser.describe(Image.class, imageDescription).click();
+
 
         }
         catch (Exception e){
