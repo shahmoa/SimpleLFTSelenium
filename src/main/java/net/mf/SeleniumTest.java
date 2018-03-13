@@ -70,7 +70,7 @@ public class SeleniumTest  {
 
         // Location of where your chromedriver is locate.
         // If you don't use the setPropery, then you will need to have chromedriver in your system path
-        System.setProperty("webdriver.chrome.driver", "/home/demo/IdeaProjects/SimpleLFTSelenium/2.36/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "./2.36/chromedriver");
         ChromeOptions co = new ChromeOptions();
         co.addExtensions(new File("/opt/leanft/Installations/Chrome/Agent.crx")); // path to agent on my linux yours may differ
         WebDriver driver = new ChromeDriver(co);
@@ -80,7 +80,7 @@ public class SeleniumTest  {
         org.openqa.selenium.WebElement P = null;
 
         try {
-            Reporter.reportEvent("Launch Selenium webdriver", "<b>Using URL:</b><br><h1><font color='red'><a href='"+TEST_URL+"' target='_blank'>"+TEST_URL+"</font></h1>");
+            Reporter.reportEvent("Launch Selenium webdriver", "<b>Using URL:</b><br><h1><a href='"+TEST_URL+"' target='_blank'>"+TEST_URL+"</h1>");
 
             driver.get(TEST_URL);
 
