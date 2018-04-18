@@ -70,7 +70,10 @@ public class SeleniumTest  {
 
         // Location of where your chromedriver is locate.
         // If you don't use the setPropery, then you will need to have chromedriver in your system path
+
         System.setProperty("webdriver.chrome.driver", "./2.36/chromedriver");
+
+        //System.setProperty("webdriver.chrome.driver", "./2.36/chromedriver");
         ChromeOptions co = new ChromeOptions();
         co.addExtensions(new File("/opt/leanft/Installations/Chrome/Agent.crx")); // path to agent on my linux yours may differ
         WebDriver driver = new ChromeDriver(co);
